@@ -99,7 +99,6 @@
     NSString* _baseHTTPURL;
     NSString* _baseHTTPSURL;
     NSString* _clientUniqueId;
-    NSString* _sharedStreamUniqueId;
     NSString* _deviceName;
     NSData* _serverCert;
     
@@ -109,7 +108,7 @@
 static uint64_t gLastServerInfoErrorLogMs = 0;
 static int gSuppressedServerInfoErrorLogs = 0;
 static const char *kTempKeychainPassword = "limelight";
-static NSString * const kSharedStreamSessionUniqueId = @"0123456789ABCDEF";
+static NSString * const kFallbackClientUniqueId = @"0000000000000000";
 // Not always exposed as a named constant in older SDKs.
 static const OSStatus kErrSecPkcs12VerifyFailure = -25264;
 static SecKeychainRef gTempClientKeychain = NULL;
@@ -167,12 +166,9 @@ static const NSString* HTTPS_PORT = @"47984";
 
 - (id) initWithHost:(NSString*) host uniqueId:(NSString*) uniqueId serverCert:(NSData*) serverCert {
     self = [super init];
-    // Use a per-client ID for pairing/discovery so different Moonlight installs
-    // don't overwrite each other's pairing state on the host.
-    _clientUniqueId = uniqueId.length > 0 ? uniqueId : kSharedStreamSessionUniqueId;
-    // Keep the historical shared stream session ID so another Moonlight client
-    // can still stop a session started elsewhere.
-    _sharedStreamUniqueId = kSharedStreamSessionUniqueId;
+    // The same per-client ID must be used for pairing, discovery, and stream
+    // control. Hosts such as Foundation Sunshine authorize launch requests by it.
+    _clientUniqueId = uniqueId.length > 0 ? uniqueId : kFallbackClientUniqueId;
     _deviceName = deviceName;
     _serverCert = serverCert;
     
@@ -490,7 +486,7 @@ static const NSString* HTTPS_PORT = @"47984";
     }
 
     NSString* urlString = [NSString stringWithFormat:@"%@/launch?uniqueid=%@&appid=%@&mode=%dx%dx%d&additionalStates=1&sops=%d&rikey=%@&rikeyid=%d%@%@&localAudioPlayMode=%d&surroundAudioInfo=%u",
-                           _baseHTTPSURL, _sharedStreamUniqueId,
+                           _baseHTTPSURL, _clientUniqueId,
                            config.appID,
                            modeWidth, modeHeight, modeFps,
                            sops ? 1 : 0,
@@ -573,7 +569,7 @@ static const NSString* HTTPS_PORT = @"47984";
     }
 
     NSString* urlString = [NSString stringWithFormat:@"%@/resume?uniqueid=%@&appid=%@&mode=%dx%dx%d&additionalStates=1&sops=%d&rikey=%@&rikeyid=%d%@%@&localAudioPlayMode=%d&surroundAudioInfo=%u",
-                           _baseHTTPSURL, _sharedStreamUniqueId,
+                           _baseHTTPSURL, _clientUniqueId,
                            config.appID,
                            modeWidth, modeHeight, modeFps,
                            sops ? 1 : 0,
@@ -588,7 +584,7 @@ static const NSString* HTTPS_PORT = @"47984";
 }
 
 - (NSURLRequest*) newQuitAppRequest {
-    NSString* urlString = [NSString stringWithFormat:@"%@/cancel?uniqueid=%@", _baseHTTPSURL, _sharedStreamUniqueId];
+    NSString* urlString = [NSString stringWithFormat:@"%@/cancel?uniqueid=%@", _baseHTTPSURL, _clientUniqueId];
     return [self createRequestFromString:urlString timeout:LONG_TIMEOUT_SEC];
 }
 

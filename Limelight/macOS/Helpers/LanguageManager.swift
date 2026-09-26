@@ -20,7 +20,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 public class LanguageManager: NSObject, ObservableObject {
   public static let shared = LanguageManager()
 
-  @AppStorage("appLanguage") var currentLanguage: AppLanguage = .system
+  @AppStorage("appLanguage") var currentLanguage: AppLanguage = .english
 
   public override init() {
     super.init()

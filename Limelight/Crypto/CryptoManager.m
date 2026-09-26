@@ -206,9 +206,7 @@ static NSData* p12 = nil;
 #if TARGET_OS_TV
     return [[NSUserDefaults standardUserDefaults] dataForKey:item];
 #else
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:item];
+    NSString *file = [[CryptoManager cryptoDirectory] stringByAppendingPathComponent:item];
     return [NSData dataWithContentsOfFile:file];
 #endif
 }
@@ -217,11 +215,22 @@ static NSData* p12 = nil;
 #if TARGET_OS_TV
     [[NSUserDefaults standardUserDefaults] setObject:data forKey:item];
 #else
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:item];
+    NSString *file = [[CryptoManager cryptoDirectory] stringByAppendingPathComponent:item];
     [data writeToFile:file atomically:YES];
 #endif
+}
+
++ (NSString*) cryptoDirectory {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString *baseDirectory = [paths objectAtIndex:0];
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier] ?: @"MoonlightEnhanced";
+    NSString *directory = [baseDirectory stringByAppendingPathComponent:bundleIdentifier];
+
+    [[NSFileManager defaultManager] createDirectoryAtPath:directory
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:nil];
+    return directory;
 }
 
 + (NSData*) readCertFromFile {
