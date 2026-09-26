@@ -772,8 +772,13 @@ static const double MOUSE_SPEED_DIVISOR = 2.5;
 
 +(int) getConnectedGamepadMask:(StreamConfiguration*)streamConfig {
     int mask = 0;
+
+    // Runtime controller events do not have a StreamConfiguration instance. They
+    // still need the active controller mask, so treat a missing configuration as
+    // the multi-controller path instead of dereferencing a null pointer.
+    bool multiController = streamConfig == nil || streamConfig.multiController;
     
-    if (streamConfig.multiController) {
+    if (multiController) {
         int i = 0;
         for (GCController* controller in [GCController controllers]) {
             if ([ControllerSupport isSupportedGamepad:controller]) {
