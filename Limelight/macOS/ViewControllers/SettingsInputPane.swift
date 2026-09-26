@@ -459,11 +459,10 @@ private final class ControllerTestMonitor: ObservableObject {
   @Published private(set) var devices: [Device] = []
   @Published private(set) var lastInput = "Waiting for a button press"
   @Published private(set) var receivedInputCount = 0
+  @Published private(set) var isTesting = false
 
   private var connectObserver: NSObjectProtocol?
   private var disconnectObserver: NSObjectProtocol?
-  private var installedControllerIDs = Set<ObjectIdentifier>()
-
   init() {
     connectObserver = NotificationCenter.default.addObserver(
       forName: .GCControllerDidConnect, object: nil, queue: .main
@@ -487,7 +486,6 @@ private final class ControllerTestMonitor: ObservableObject {
     let controllers = GCController.controllers()
     devices = controllers.compactMap { controller in
       guard controller.extendedGamepad != nil || controller.gamepad != nil else { return nil }
-      installButtonObservers(on: controller)
       return Device(
         id: ObjectIdentifier(controller),
         name: controller.vendorName ?? "Game Controller",
@@ -497,37 +495,74 @@ private final class ControllerTestMonitor: ObservableObject {
 
     if devices.isEmpty {
       lastInput = "No compatible controller detected"
+      isTesting = false
     }
   }
 
-  private func installButtonObservers(on controller: GCController) {
-    let identifier = ObjectIdentifier(controller)
-    guard installedControllerIDs.insert(identifier).inserted else { return }
+  func startTest() {
+    refresh()
+    guard !devices.isEmpty else { return }
 
-    guard let gamepad = controller.extendedGamepad else { return }
-    observe(gamepad.buttonA, name: "A / Cross")
-    observe(gamepad.buttonB, name: "B / Circle")
-    observe(gamepad.buttonX, name: "X / Square")
-    observe(gamepad.buttonY, name: "Y / Triangle")
-    observe(gamepad.leftShoulder, name: "L1")
-    observe(gamepad.rightShoulder, name: "R1")
-    observe(gamepad.buttonMenu, name: "Menu / Options")
-    if let buttonOptions = gamepad.buttonOptions {
-      observe(buttonOptions, name: "Options / Share")
-    }
-    if let buttonHome = gamepad.buttonHome {
-      observe(buttonHome, name: "PS / Home")
-    }
-  }
+    receivedInputCount = 0
+    lastInput = "Listening — press Cross, Circle, or a D-pad button"
+    isTesting = true
 
-  private func observe(_ button: GCControllerButtonInput, name: String) {
-    button.pressedChangedHandler = { [weak self] _, _, pressed in
-      guard pressed else { return }
-      DispatchQueue.main.async {
-        self?.lastInput = "Received: \(name)"
-        self?.receivedInputCount += 1
+    // GameController delivers reliable live input through each profile's
+    // valueChangedHandler. This is intentionally an explicit test mode: a
+    // streaming session installs its own handler when it starts.
+    for controller in GCController.controllers() {
+      if let gamepad = controller.extendedGamepad {
+        gamepad.valueChangedHandler = { [weak self] gamepad, element in
+          self?.recordInput(name: Self.extendedElementName(element, in: gamepad))
+        }
+      } else if let gamepad = controller.gamepad {
+        gamepad.valueChangedHandler = { [weak self] gamepad, element in
+          self?.recordInput(name: Self.standardElementName(element, in: gamepad))
+        }
       }
     }
+  }
+
+  func stopTest() {
+    isTesting = false
+    lastInput = "Test stopped — start a stream to restore forwarding"
+  }
+
+  private func recordInput(name: String) {
+    DispatchQueue.main.async { [weak self] in
+      guard let self, self.isTesting else { return }
+      self.lastInput = "Received: \(name)"
+      self.receivedInputCount += 1
+    }
+  }
+
+  private static func extendedElementName(_ element: GCControllerElement, in gamepad: GCExtendedGamepad) -> String {
+    if element === gamepad.buttonA { return "A / Cross" }
+    if element === gamepad.buttonB { return "B / Circle" }
+    if element === gamepad.buttonX { return "X / Square" }
+    if element === gamepad.buttonY { return "Y / Triangle" }
+    if element === gamepad.dpad { return "D-pad" }
+    if element === gamepad.leftShoulder { return "L1" }
+    if element === gamepad.rightShoulder { return "R1" }
+    if element === gamepad.leftTrigger { return "L2" }
+    if element === gamepad.rightTrigger { return "R2" }
+    if element === gamepad.leftThumbstick { return "Left Stick" }
+    if element === gamepad.rightThumbstick { return "Right Stick" }
+    if element === gamepad.buttonMenu { return "Menu / Options" }
+    if element === gamepad.buttonOptions { return "Options / Share" }
+    if element === gamepad.buttonHome { return "PS / Home" }
+    return "Controller input"
+  }
+
+  private static func standardElementName(_ element: GCControllerElement, in gamepad: GCGamepad) -> String {
+    if element === gamepad.buttonA { return "A / Cross" }
+    if element === gamepad.buttonB { return "B / Circle" }
+    if element === gamepad.buttonX { return "X / Square" }
+    if element === gamepad.buttonY { return "Y / Triangle" }
+    if element === gamepad.dpad { return "D-pad" }
+    if element === gamepad.leftShoulder { return "L1" }
+    if element === gamepad.rightShoulder { return "R1" }
+    return "Controller input"
   }
 }
 
@@ -540,8 +575,19 @@ private struct ControllerTestCard: View {
         Label("Controller Test", systemImage: "gamecontroller.fill")
           .font(.subheadline.weight(.semibold))
         Spacer()
-        Button("Refresh") { monitor.refresh() }
-          .buttonStyle(.borderless)
+        HStack(spacing: 12) {
+          Button("Refresh") { monitor.refresh() }
+            .buttonStyle(.borderless)
+          Button(monitor.isTesting ? "Stop Test" : "Start Test") {
+            if monitor.isTesting {
+              monitor.stopTest()
+            } else {
+              monitor.startTest()
+            }
+          }
+          .buttonStyle(.borderedProminent)
+          .disabled(monitor.devices.isEmpty)
+        }
       }
 
       if monitor.devices.isEmpty {
@@ -574,7 +620,7 @@ private struct ControllerTestCard: View {
         .padding(10)
         .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
 
-        Text("This only verifies macOS input. Start a stream afterward to verify forwarding to Sunshine.")
+        Text("End a stream before starting this test. Starting a new stream restores Farside's controller forwarding automatically.")
           .font(.caption)
           .foregroundStyle(.secondary)
       }
