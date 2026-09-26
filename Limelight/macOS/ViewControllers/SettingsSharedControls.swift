@@ -869,7 +869,7 @@ private struct KeyboardTranslationRuleEditorSheet: View {
         .buttonStyle(.plain)
       } else {
         VStack(alignment: .leading, spacing: 8) {
-          Text(languageManager.localize("Moonlight Action"))
+          Text(languageManager.localize("Farside Action"))
             .font(.headline)
 
           Picker("", selection: $localAction) {

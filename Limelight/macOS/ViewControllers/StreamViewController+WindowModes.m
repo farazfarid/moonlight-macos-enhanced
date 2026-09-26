@@ -551,7 +551,7 @@
         return;
     }
     
-    CFStringRef reasonForActivity= CFSTR("Moonlight streaming");
+    CFStringRef reasonForActivity= CFSTR("Farside streaming");
     
     IOPMAssertionID assertionID;
     IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &assertionID);

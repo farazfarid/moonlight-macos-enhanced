@@ -1206,7 +1206,7 @@ private struct DebugLogLiveView: View {
     }
 
     let header = """
-      # Moonlight Filtered Log
+      # Farside Filtered Log
       # Generated: \(ISO8601DateFormatter().string(from: Date()))
       # Log Mode: \(snapshotMode == "raw" ? "raw" : "default")
       # Min Level: \(snapshotMinLevel)
