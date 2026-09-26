@@ -180,7 +180,7 @@
 
     [SettingsWindowObjCBridge syncSelectedProfileWithHostId:nil];
     
-    self.parentViewController.title = @"Moonlight";
+    self.parentViewController.title = @"Farside";
     self.parentViewController.view.window.subtitle = [Helpers versionNumberString];
 
     [self.parentViewController.view.window moonlight_toolbarItemForAction:@selector(addHostButtonClicked:)].enabled = YES;

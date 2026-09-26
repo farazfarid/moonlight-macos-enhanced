@@ -21,8 +21,8 @@
 
 @implementation AboutViewController
 
-static NSString * const MoonlightEnhancedRepositoryURL = @"https://github.com/skyhua0224/moonlight-macos-enhanced";
-static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua0224/moonlight-macos-enhanced/blob/master/README.md";
+static NSString * const MoonlightEnhancedRepositoryURL = @"https://github.com/farazfarid/moonlight-macos-enhanced";
+static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/farazfarid/moonlight-macos-enhanced/blob/master/README.md";
 
 #pragma mark - Lifecycle
 
@@ -63,7 +63,7 @@ static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua
     self.creditsTextFieldLink.attributedStringValue = [self makeTextFieldLinkWithURLString:MoonlightEnhancedReadmeURL :self.creditsTextFieldLink];
 
     if (self.view.window != nil) {
-        self.view.window.title = [[LanguageManager shared] localize:@"About Moonlight macOS Enhanced"];
+        self.view.window.title = [[LanguageManager shared] localize:@"About Farside"];
     }
 }
 

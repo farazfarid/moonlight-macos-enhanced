@@ -452,10 +452,11 @@
 					"-weak_framework",
 					MetalFX,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = std.skyhua.MoonlightMac;
-				PRODUCT_NAME = Moonlight;
+				PRODUCT_BUNDLE_IDENTIFIER = com.farazfarid.farside;
+				PRODUCT_NAME = Farside;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Limelight/Moonlight-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Moonlight-Swift.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -512,10 +513,11 @@
 					"-weak_framework",
 					MetalFX,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = std.skyhua.MoonlightMac;
-				PRODUCT_NAME = Moonlight;
+				PRODUCT_BUNDLE_IDENTIFIER = com.farazfarid.farside;
+				PRODUCT_NAME = Farside;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Limelight/Moonlight-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Moonlight-Swift.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

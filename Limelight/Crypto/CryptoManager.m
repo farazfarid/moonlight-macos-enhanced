@@ -206,9 +206,7 @@ static NSData* p12 = nil;
 #if TARGET_OS_TV
     return [[NSUserDefaults standardUserDefaults] dataForKey:item];
 #else
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:item];
+    NSString *file = [[CryptoManager cryptoDirectory] stringByAppendingPathComponent:item];
     return [NSData dataWithContentsOfFile:file];
 #endif
 }
@@ -217,11 +215,37 @@ static NSData* p12 = nil;
 #if TARGET_OS_TV
     [[NSUserDefaults standardUserDefaults] setObject:data forKey:item];
 #else
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:item];
+    NSString *file = [[CryptoManager cryptoDirectory] stringByAppendingPathComponent:item];
     [data writeToFile:file atomically:YES];
 #endif
+}
+
++ (NSString*) cryptoDirectory {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString *baseDirectory = [paths objectAtIndex:0];
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier] ?: @"MoonlightEnhanced";
+    NSString *directory = [baseDirectory stringByAppendingPathComponent:bundleIdentifier];
+
+    [[NSFileManager defaultManager] createDirectoryAtPath:directory
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:nil];
+
+    // Farside supersedes the earlier Moonlight Enhanced build. Preserve the
+    // existing pairing identity once, so the renamed app does not force users
+    // to re-pair every saved host.
+    if ([bundleIdentifier isEqualToString:@"com.farazfarid.farside"]) {
+        NSString *legacyDirectory = [baseDirectory stringByAppendingPathComponent:@"com.faraz.MoonlightEnhanced"];
+        for (NSString *item in @[ @"client.crt", @"client.p12", @"client.key" ]) {
+            NSString *destination = [directory stringByAppendingPathComponent:item];
+            NSString *source = [legacyDirectory stringByAppendingPathComponent:item];
+            if (![[NSFileManager defaultManager] fileExistsAtPath:destination] &&
+                [[NSFileManager defaultManager] fileExistsAtPath:source]) {
+                [[NSFileManager defaultManager] copyItemAtPath:source toPath:destination error:nil];
+            }
+        }
+    }
+    return directory;
 }
 
 + (NSData*) readCertFromFile {

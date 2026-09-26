@@ -389,7 +389,7 @@ final class StreamShortcutProfile: NSObject {
     case .remoteShortcut:
       return "Remote Shortcut"
     case .localAction:
-      return "Moonlight Action"
+      return "Farside Action"
     }
   }
 }

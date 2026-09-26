@@ -22,6 +22,10 @@ class SettingsHostingController<RootView: View>: NSWindowController {
     window.collectionBehavior = [.fullScreenNone]
     window.tabbingMode = .disallowed
     window.title = LanguageManager.shared.localize("Settings")
+    window.setContentSize(NSSize(width: 960, height: 680))
+    window.minSize = NSSize(width: 820, height: 600)
+    window.setFrameAutosaveName("FarsideSettingsWindow")
+    window.center()
 
     self.init(window: window)
 
@@ -84,7 +88,7 @@ private struct WelcomePermissionsView: View {
           .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
         VStack(alignment: .leading, spacing: 8) {
-          Text(languageManager.localize("Welcome to Moonlight macOS Enhanced"))
+          Text(languageManager.localize("Welcome to Farside"))
             .font(.system(size: 28, weight: .semibold, design: .rounded))
           Text(languageManager.localize("Welcome Permissions Subtitle"))
             .foregroundColor(.secondary)
@@ -147,7 +151,7 @@ private struct WelcomePermissionsView: View {
   }
 
   private var githubURL: URL {
-    URL(string: "https://github.com/skyhua0224/moonlight-macos-enhanced")!
+    URL(string: "https://github.com/farazfarid/moonlight-macos-enhanced")!
   }
 
   @ViewBuilder

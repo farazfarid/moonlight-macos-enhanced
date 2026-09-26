@@ -551,7 +551,7 @@
         return;
     }
     
-    CFStringRef reasonForActivity= CFSTR("Moonlight streaming");
+    CFStringRef reasonForActivity= CFSTR("Farside streaming");
     
     IOPMAssertionID assertionID;
     IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
@@ -648,7 +648,7 @@
 
         if (message != nil) {
             // Show the error overlay and keep window open for retry/options
-            [self showErrorOverlayWithTitle:@"连接失败" message:message canWait:NO];
+            [self showErrorOverlayWithTitle:MLString(@"Connection Failed", nil) message:message canWait:NO];
         } else {
             [self.delegate appDidQuit:self.app];
             [self requestSafeCloseOfStreamWindow];

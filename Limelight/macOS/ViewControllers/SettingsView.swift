@@ -28,7 +28,7 @@ enum SettingsPaneType: Int, CaseIterable {
   var title: String {
     switch self {
     case .stream:
-      return "Stream"
+      return "Farside Profiles"
     case .video:
       return "Video"
     case .audio:
@@ -45,7 +45,7 @@ enum SettingsPaneType: Int, CaseIterable {
   var symbol: String {
     switch self {
     case .stream:
-      return "airplayvideo"
+      return "slider.horizontal.3"
     case .video:
       return "video.fill"
     case .audio:
@@ -62,7 +62,7 @@ enum SettingsPaneType: Int, CaseIterable {
   var color: Color {
     switch self {
     case .stream:
-      return .blue
+      return Color(hex: 0x5B5CE2)
     case .video:
       return .orange
     case .audio:
@@ -108,7 +108,7 @@ struct SettingsView: View {
       Detail(pane: selectedPane)
         .environmentObject(settingsModel)
     }
-    .frame(minWidth: 575, minHeight: 275)
+    .frame(minWidth: 820, idealWidth: 960, minHeight: 600, idealHeight: 680)
     .onAppear {
       if selectedPane == .legacy {
         selectedPane = .app

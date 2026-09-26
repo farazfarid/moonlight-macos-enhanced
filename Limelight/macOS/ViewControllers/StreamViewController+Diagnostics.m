@@ -81,8 +81,8 @@
                 return;
             }
 
-            NSString *timeoutMessage = @"主机仍在启动或恢复串流，会比视频阶段慢很多。\n可继续等待，或手动重连 / 返回后重新进入。";
-            [strongSelf showErrorOverlayWithTitle:@"主机启动较慢"
+            NSString *timeoutMessage = @"The host is still starting or resuming the stream.\nYou can keep waiting, reconnect manually, or return and try again.";
+            [strongSelf showErrorOverlayWithTitle:@"Host Is Taking Longer Than Expected"
                                           message:timeoutMessage
                                           canWait:YES];
             return;
@@ -92,8 +92,8 @@
         if (strongSelf.reconnectInProgress) {
             [strongSelf hideReconnectOverlay];
             strongSelf.reconnectInProgress = NO;
-            [strongSelf showErrorOverlayWithTitle:@"重连超时"
-                                          message:@"重连过程耗时过长，连接可能已断开。\n请检查网络环境或调整设置。"
+            [strongSelf showErrorOverlayWithTitle:@"Reconnect Timed Out"
+                                          message:@"Reconnecting took too long and the connection may have closed.\nCheck the network or adjust the stream settings."
                                           canWait:NO];
             return;
         }
@@ -103,18 +103,18 @@
             strongSelf.shouldAttemptReconnect &&
             [strongSelf isAutomaticRecoveryModeEnabled]) {
             strongSelf.didAutoReconnectAfterTimeout = YES;
-            [strongSelf showReconnectOverlayWithMessage:@"网络无响应，正在尝试重连…"]; 
+            [strongSelf showReconnectOverlayWithMessage:@"The network is not responding. Reconnecting…"];
             [strongSelf attemptReconnectWithReason:@"connect-timeout-auto"]; 
             return;
         }
 
         NSString *timeoutMessage = [strongSelf isAutomaticRecoveryModeEnabled]
-            ? @"已持续 15 秒未接收到视频数据。\n请检查网络连接或尝试以下操作。"
+            ? @"No video data has arrived for 15 seconds.\nCheck the network connection or try one of the options below."
             : [NSString stringWithFormat:@"%@\n%@\n%@",
                 MLString(@"No new video frame has arrived for 15 seconds.", @"Manual timeout lead message"),
                 MLString(@"Manual mode won't change your resolution, frame rate, codec, or chroma automatically.", @"Manual timeout manual mode explanation"),
                 MLString(@"You can keep waiting, reconnect manually, or apply a recommended profile.", @"Manual timeout actions")];
-        [strongSelf showErrorOverlayWithTitle:@"连接不稳定或无画面"
+        [strongSelf showErrorOverlayWithTitle:@"Connection Is Unstable or No Video Is Arriving"
                                       message:timeoutMessage
                                       canWait:YES];
     });
@@ -188,7 +188,7 @@
 
         // --- Core Actions ---
         
-        NSButton *reconnectBtn = [NSButton buttonWithTitle:@"尝试重连" target:self action:@selector(handleTimeoutReconnect:)];
+        NSButton *reconnectBtn = [NSButton buttonWithTitle:MLString(@"Retry Connection", nil) target:self action:@selector(handleTimeoutReconnect:)];
         reconnectBtn.bezelStyle = NSBezelStyleRounded; // Standard pill style
         reconnectBtn.controlSize = NSControlSizeLarge; 
         reconnectBtn.font = [NSFont systemFontOfSize:14 weight:NSFontWeightSemibold];
@@ -196,11 +196,11 @@
         // To make it look "filled" on HUD, rely on bezelStyle or use layer
         // Standard macOS dark HUD usually handles rounded buttons well.
 
-        NSButton *waitBtn = [NSButton buttonWithTitle:@"继续等待" target:self action:@selector(handleTimeoutWait:)];
+        NSButton *waitBtn = [NSButton buttonWithTitle:MLString(@"Continue Waiting", nil) target:self action:@selector(handleTimeoutWait:)];
         waitBtn.bezelStyle = NSBezelStyleRounded;
         waitBtn.controlSize = NSControlSizeLarge;
 
-        NSButton *exitBtn = [NSButton buttonWithTitle:@"退出串流" target:self action:@selector(handleTimeoutExitStream:)];
+        NSButton *exitBtn = [NSButton buttonWithTitle:MLString(@"Exit Stream", nil) target:self action:@selector(handleTimeoutExitStream:)];
         exitBtn.bezelStyle = NSBezelStyleRounded;
         exitBtn.controlSize = NSControlSizeLarge;
 
@@ -238,11 +238,11 @@
             return btn;
         };
 
-        NSButton *resBtn = createSettingsBtn(@"分辨率", @"display", @selector(handleTimeoutResolution:));
-        NSButton *bitrateBtn = createSettingsBtn(@"码率", @"speedometer", @selector(handleTimeoutBitrate:));
-        NSButton *displayModeBtn = createSettingsBtn(@"显示模式", @"macwindow", @selector(handleTimeoutDisplayMode:));
-        NSButton *connBtn = createSettingsBtn(@"连接方式", @"network", @selector(handleTimeoutConnection:));
-        NSButton *recommendedBtn = createSettingsBtn(@"推荐档位", @"sparkles", @selector(handleTimeoutRecommendedProfile:));
+        NSButton *resBtn = createSettingsBtn(MLString(@"Resolution", nil), @"display", @selector(handleTimeoutResolution:));
+        NSButton *bitrateBtn = createSettingsBtn(MLString(@"Bitrate", nil), @"speedometer", @selector(handleTimeoutBitrate:));
+        NSButton *displayModeBtn = createSettingsBtn(MLString(@"Display Mode", nil), @"macwindow", @selector(handleTimeoutDisplayMode:));
+        NSButton *connBtn = createSettingsBtn(MLString(@"Connection Method", nil), @"network", @selector(handleTimeoutConnection:));
+        NSButton *recommendedBtn = createSettingsBtn(MLString(@"Recommended Profile", nil), @"sparkles", @selector(handleTimeoutRecommendedProfile:));
 
         // --- Log Tools - 改进样式，使用图标按钮 ---
         
@@ -277,8 +277,8 @@
             return btn;
         };
         
-        NSButton *viewLogBtn = createLogBtn(@"查看日志", @"doc.text.magnifyingglass", @selector(handleTimeoutViewLogs:));
-        NSButton *copyLogBtn = createLogBtn(@"复制日志", @"doc.on.doc", @selector(handleTimeoutCopyLogs:));
+        NSButton *viewLogBtn = createLogBtn(MLString(@"View Log", nil), @"doc.text.magnifyingglass", @selector(handleTimeoutViewLogs:));
+        NSButton *copyLogBtn = createLogBtn(MLString(@"Copy Log", nil), @"doc.on.doc", @selector(handleTimeoutCopyLogs:));
 
         // --- Hierarchy ---
 
@@ -321,8 +321,8 @@
     }
     
     // Update content
-    self.timeoutTitleLabel.stringValue = title ?: @"连接异常";
-    self.timeoutLabel.stringValue = message ?: @"未知错误";
+    self.timeoutTitleLabel.stringValue = title ?: MLString(@"Connection Error", nil);
+    self.timeoutLabel.stringValue = message ?: MLString(@"Unknown Error", nil);
     self.timeoutWaitButton.hidden = !canWait;
     BOOL showRecommendedProfile = self.currentStreamRiskAssessment != nil &&
                                   self.currentStreamRiskAssessment.manualExpertMode &&
@@ -384,7 +384,7 @@
     [self rebuildStreamMenu];
     NSMenuItem *monitorItem = nil;
     for (NSMenuItem *item in self.streamMenu.itemArray) {
-        if ([item.title isEqualToString:@"屏幕"]) {
+        if ([item.title isEqualToString:@"Resolution"]) {
             monitorItem = item;
             break;
         }
@@ -400,7 +400,7 @@
     [self rebuildStreamMenu];
     NSMenuItem *qualityItem = nil;
     for (NSMenuItem *item in self.streamMenu.itemArray) {
-        if ([item.title isEqualToString:@"画质"]) {
+        if ([item.title isEqualToString:@"Quality"]) {
             qualityItem = item;
             break;
         }
@@ -416,7 +416,7 @@
     [self rebuildStreamMenu];
     NSMenuItem *windowItem = nil;
     for (NSMenuItem *item in self.streamMenu.itemArray) {
-        if ([item.title isEqualToString:@"窗口"]) {
+        if ([item.title isEqualToString:@"Display Mode"]) {
             windowItem = item;
             break;
         }
@@ -447,7 +447,7 @@
         [menu addItem:item];
     };
 
-    addItem(@"当前", host.activeAddress); // Ensure current is always first if valid
+    addItem(@"Current", host.activeAddress); // Ensure current is always first if valid
     addItem(@"Local", host.localAddress);
     addItem(@"IPv6", host.ipv6Address);
     addItem(@"Public", host.externalAddress);
@@ -458,7 +458,7 @@
     }
     
     if (menu.itemArray.count == 0) {
-        [menu addItemWithTitle:@"无可用地址" action:nil keyEquivalent:@""];
+        [menu addItemWithTitle:@"No addresses available" action:nil keyEquivalent:@""];
     }
 
     NSButton *btn = (NSButton *)sender;
@@ -1753,7 +1753,7 @@
     }
 
     [popup removeAllItems];
-    [popup addItemWithTitle:@"全部 / All"];
+    [popup addItemWithTitle:@"All"];
     popup.itemArray.lastObject.representedObject = @"all";
 
     for (MLLogCategoryDescriptor *descriptor in [MLLogCategoryClassifier filterOptions]) {
@@ -1783,9 +1783,9 @@
     }
 
     [popup removeAllItems];
-    [popup addItemWithTitle:@"默认日志"];
+    [popup addItemWithTitle:@"Standard Log"];
     popup.itemArray.lastObject.representedObject = @"default";
-    [popup addItemWithTitle:@"原始日志"];
+    [popup addItemWithTitle:@"Raw Log"];
     popup.itemArray.lastObject.representedObject = @"raw";
 
     NSInteger matchIndex = 0;
@@ -1807,7 +1807,7 @@
 
     [popup removeAllItems];
     NSArray<NSArray<NSString *> *> *items = @[
-        @[ @"全部级别", @"all" ],
+        @[ @"All Levels", @"all" ],
         @[ @"Debug+", @"debug" ],
         @[ @"Info+", @"info" ],
         @[ @"Warn+", @"warn" ],
@@ -1853,10 +1853,10 @@
     NSPopUpButton *levelPopup = [self.logOverlayContainer viewWithTag:1010];
 
     if (pauseBtn) {
-        pauseBtn.title = self.logOverlayPauseUpdates ? @"继续更新" : @"暂停更新";
+        pauseBtn.title = self.logOverlayPauseUpdates ? @"Resume Updates" : @"Pause Updates";
     }
     if (autoScrollBtn) {
-        autoScrollBtn.title = self.logOverlayAutoScrollEnabled ? @"暂停滚动" : @"开启滚动";
+        autoScrollBtn.title = self.logOverlayAutoScrollEnabled ? @"Pause Scrolling" : @"Enable Scrolling";
     }
     if (jumpBtn) {
         jumpBtn.enabled = self.logOverlayDisplayLines.count > 0;
@@ -1867,7 +1867,7 @@
                             self.logOverlayAllRawLines.count > 0);
     }
     if (copyBtn) {
-        copyBtn.title = [self.logOverlayModeKey isEqualToString:@"raw"] ? @"复制原始日志" : @"复制默认日志";
+        copyBtn.title = [self.logOverlayModeKey isEqualToString:@"raw"] ? @"Copy Raw Log" : @"Copy Standard Log";
         copyBtn.enabled = self.logOverlayDisplayLines.count > 0;
     }
     if (searchField && ![searchField.stringValue isEqualToString:self.logOverlaySearchText ?: @""]) {
@@ -1917,10 +1917,10 @@
     }
     if (statusLabel) {
         NSMutableArray<NSString *> *parts = [[NSMutableArray alloc] init];
-        NSString *modeSummary = [self.logOverlayModeKey isEqualToString:@"raw"] ? @"原始日志" : @"默认日志";
+        NSString *modeSummary = [self.logOverlayModeKey isEqualToString:@"raw"] ? @"Raw Log" : @"Standard Log";
         [parts addObject:modeSummary];
 
-        NSString *levelSummary = @"全部级别";
+        NSString *levelSummary = @"All Levels";
         if ([self.logOverlayMinimumLevelKey isEqualToString:@"debug"]) {
             levelSummary = @"Debug+";
         } else if ([self.logOverlayMinimumLevelKey isEqualToString:@"info"]) {
@@ -1939,15 +1939,15 @@
 
         NSString *keyword = [self.logOverlaySearchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if (keyword.length > 0) {
-            [parts addObject:[NSString stringWithFormat:@"搜索=%@", keyword]];
+            [parts addObject:[NSString stringWithFormat:@"Search=%@", keyword]];
         }
 
-        [parts addObject:[NSString stringWithFormat:@"显示 %lu 行 / 原始 %lu 条",
+        [parts addObject:[NSString stringWithFormat:@"Showing %lu lines / %lu raw entries",
                           (unsigned long)self.logOverlayDisplayLines.count,
                           (unsigned long)self.logOverlayAllRawLines.count]];
 
         if (self.logOverlayPauseUpdates && self.logOverlayPausedRawLines.count > 0) {
-            [parts addObject:[NSString stringWithFormat:@"暂停中，待处理 %lu 条",
+            [parts addObject:[NSString stringWithFormat:@"Paused, %lu entries pending",
                               (unsigned long)self.logOverlayPausedRawLines.count]];
             statusLabel.stringValue = [parts componentsJoinedByString:@" | "];
         } else {
@@ -1994,9 +1994,9 @@
     if ([sender isKindOfClass:[NSButton class]]) {
         NSButton *btn = (NSButton *)sender;
         NSString *origTitle = btn.title;
-        btn.title = @"已复制";
+        btn.title = @"Copied";
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([btn.title isEqualToString:@"已复制"]) {
+            if ([btn.title isEqualToString:@"Copied"]) {
                 btn.title = origTitle;
             }
         });
@@ -2019,37 +2019,37 @@
     self.logOverlayContainer.layer.masksToBounds = YES;
     
     // Close Button
-    NSButton *closeBtn = [NSButton buttonWithTitle:@"关闭" target:self action:@selector(handleLogOverlayClose:)];
+    NSButton *closeBtn = [NSButton buttonWithTitle:@"Close" target:self action:@selector(handleLogOverlayClose:)];
     closeBtn.bezelStyle = NSBezelStyleRounded;
     closeBtn.controlSize = NSControlSizeRegular;
     closeBtn.tag = 999;
     [self.logOverlayContainer addSubview:closeBtn];
 
-    NSButton *pauseBtn = [NSButton buttonWithTitle:@"暂停更新" target:self action:@selector(handleLogOverlayPauseToggle:)];
+    NSButton *pauseBtn = [NSButton buttonWithTitle:@"Pause Updates" target:self action:@selector(handleLogOverlayPauseToggle:)];
     pauseBtn.bezelStyle = NSBezelStyleRounded;
     pauseBtn.controlSize = NSControlSizeSmall;
     pauseBtn.tag = 1001;
     [self.logOverlayContainer addSubview:pauseBtn];
 
-    NSButton *autoScrollBtn = [NSButton buttonWithTitle:@"暂停滚动" target:self action:@selector(handleLogOverlayAutoScrollToggle:)];
+    NSButton *autoScrollBtn = [NSButton buttonWithTitle:@"Pause Scrolling" target:self action:@selector(handleLogOverlayAutoScrollToggle:)];
     autoScrollBtn.bezelStyle = NSBezelStyleRounded;
     autoScrollBtn.controlSize = NSControlSizeSmall;
     autoScrollBtn.tag = 1002;
     [self.logOverlayContainer addSubview:autoScrollBtn];
 
-    NSButton *jumpLatestBtn = [NSButton buttonWithTitle:@"最新" target:self action:@selector(handleLogOverlayJumpLatest:)];
+    NSButton *jumpLatestBtn = [NSButton buttonWithTitle:@"Latest" target:self action:@selector(handleLogOverlayJumpLatest:)];
     jumpLatestBtn.bezelStyle = NSBezelStyleRounded;
     jumpLatestBtn.controlSize = NSControlSizeSmall;
     jumpLatestBtn.tag = 1003;
     [self.logOverlayContainer addSubview:jumpLatestBtn];
 
-    NSButton *copyBtn = [NSButton buttonWithTitle:@"复制默认日志" target:self action:@selector(handleLogOverlayCopyCompact:)];
+    NSButton *copyBtn = [NSButton buttonWithTitle:@"Copy Standard Log" target:self action:@selector(handleLogOverlayCopyCompact:)];
     copyBtn.bezelStyle = NSBezelStyleRounded;
     copyBtn.controlSize = NSControlSizeSmall;
     copyBtn.tag = 1004;
     [self.logOverlayContainer addSubview:copyBtn];
 
-    NSButton *clearBtn = [NSButton buttonWithTitle:@"从现在开始" target:self action:@selector(handleLogOverlayClearFromNow:)];
+    NSButton *clearBtn = [NSButton buttonWithTitle:@"Clear From Now" target:self action:@selector(handleLogOverlayClearFromNow:)];
     clearBtn.bezelStyle = NSBezelStyleRounded;
     clearBtn.controlSize = NSControlSizeSmall;
     clearBtn.tag = 1006;
@@ -2072,7 +2072,7 @@
     [self.logOverlayContainer addSubview:self.logOverlayLevelPopup];
 
     self.logOverlaySearchField = [[NSSearchField alloc] initWithFrame:NSZeroRect];
-    self.logOverlaySearchField.placeholderString = @"搜索关键词 / 主机 / 错误码";
+    self.logOverlaySearchField.placeholderString = @"Search keywords, host, or error code";
     self.logOverlaySearchField.font = [NSFont systemFontOfSize:12 weight:NSFontWeightRegular];
     self.logOverlaySearchField.sendsWholeSearchString = NO;
     self.logOverlaySearchField.sendsSearchStringImmediately = YES;
@@ -2097,7 +2097,7 @@
     statusLabel.font = [NSFont monospacedSystemFontOfSize:11 weight:NSFontWeightRegular];
     statusLabel.textColor = [NSColor colorWithWhite:0.85 alpha:1.0];
     statusLabel.tag = 1005;
-    statusLabel.stringValue = @"显示 0 行";
+    statusLabel.stringValue = @"Showing 0 lines";
     [self.logOverlayContainer addSubview:statusLabel];
 
     self.logOverlayScrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
