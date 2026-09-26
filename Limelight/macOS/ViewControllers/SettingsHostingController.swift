@@ -22,6 +22,10 @@ class SettingsHostingController<RootView: View>: NSWindowController {
     window.collectionBehavior = [.fullScreenNone]
     window.tabbingMode = .disallowed
     window.title = LanguageManager.shared.localize("Settings")
+    window.setContentSize(NSSize(width: 960, height: 680))
+    window.minSize = NSSize(width: 820, height: 600)
+    window.setFrameAutosaveName("FarsideSettingsWindow")
+    window.center()
 
     self.init(window: window)
 

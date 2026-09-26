@@ -108,7 +108,7 @@ struct SettingsView: View {
       Detail(pane: selectedPane)
         .environmentObject(settingsModel)
     }
-    .frame(minWidth: 575, minHeight: 275)
+    .frame(minWidth: 820, idealWidth: 960, minHeight: 600, idealHeight: 680)
     .onAppear {
       if selectedPane == .legacy {
         selectedPane = .app
