@@ -107,12 +107,48 @@ struct StreamView: View {
     return Image(nsImage: image)
   }
 
+  private var profileName: String {
+    guard let host = settingsModel.selectedHost, host.id != SettingsModel.globalHostId else {
+      return "Default Profile"
+    }
+    return host.name
+  }
+
+  private var profileResolution: String {
+    if settingsModel.selectedResolution == SettingsModel.matchDisplayResolutionSentinel {
+      return "Match This Mac"
+    }
+    if settingsModel.selectedResolution == .zero {
+      return "Custom"
+    }
+    return "\(Int(settingsModel.selectedResolution.width)) × \(Int(settingsModel.selectedResolution.height))"
+  }
+
+  private var profileBitrate: String {
+    if settingsModel.autoAdjustBitrate {
+      return "Automatic"
+    }
+    if let customBitrate = settingsModel.customBitrate {
+      return String(format: "%.0f Mb/s", Double(customBitrate) / 1000.0)
+    }
+    return "Manual"
+  }
+
   var body: some View {
     ScrollView {
       LazyVStack {
-        FormSection(title: "General") {
+        FarsideProfileSummary(
+          name: profileName,
+          resolution: profileResolution,
+          frameRate: "\(settingsModel.selectedFps) FPS",
+          bitrate: profileBitrate,
+          displayMode: languageManager.localize(settingsModel.selectedDisplayMode),
+          hdrEnabled: settingsModel.hdr
+        )
+
+        FormSection(title: "Farside Profile") {
           if let hosts = SettingsModel.hosts {
-            FormCell(title: "Profile:", contentWidth: 150) {
+            FormCell(title: "Applies To", contentWidth: 150) {
               Picker("", selection: $settingsModel.selectedHost) {
                 ForEach(hosts, id: \.self) { host in
                   if let host {
@@ -676,5 +712,62 @@ struct StreamView: View {
         settingsModel.refreshSunshineDisplays(force: false)
       }
     }
+  }
+}
+
+private struct FarsideProfileSummary: View {
+  let name: String
+  let resolution: String
+  let frameRate: String
+  let bitrate: String
+  let displayMode: String
+  let hdrEnabled: Bool
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 14) {
+      HStack(alignment: .firstTextBaseline) {
+        VStack(alignment: .leading, spacing: 3) {
+          Text("Farside Profile")
+            .font(.headline)
+          Text(name)
+            .font(.title3.weight(.semibold))
+        }
+        Spacer()
+        Label(hdrEnabled ? "HDR" : "SDR", systemImage: hdrEnabled ? "sparkles" : "display")
+          .font(.callout.weight(.medium))
+          .foregroundColor(hdrEnabled ? .purple : .secondary)
+      }
+
+      HStack(spacing: 10) {
+        profileMetric("Resolution", resolution)
+        profileMetric("Frame Rate", frameRate)
+        profileMetric("Bitrate", bitrate)
+        profileMetric("Display", displayMode)
+      }
+    }
+    .padding(16)
+    .background(
+      RoundedRectangle(cornerRadius: 16, style: .continuous)
+        .fill(Color.accentColor.opacity(0.11))
+    )
+    .overlay(
+      RoundedRectangle(cornerRadius: 16, style: .continuous)
+        .stroke(Color.accentColor.opacity(0.20), lineWidth: 1)
+    )
+    .padding(.horizontal)
+    .padding(.top, 4)
+  }
+
+  @ViewBuilder
+  private func profileMetric(_ label: String, _ value: String) -> some View {
+    VStack(alignment: .leading, spacing: 2) {
+      Text(label)
+        .font(.caption)
+        .foregroundColor(.secondary)
+      Text(value)
+        .font(.callout.weight(.medium))
+        .lineLimit(1)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
