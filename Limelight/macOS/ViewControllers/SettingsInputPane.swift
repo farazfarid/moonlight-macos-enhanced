@@ -10,12 +10,14 @@ import AVFoundation
 import AppKit
 import Carbon.HIToolbox
 import CoreGraphics
+import GameController
 import SwiftUI
 
 struct InputView: View {
   @EnvironmentObject private var settingsModel: SettingsModel
   @ObservedObject var languageManager = LanguageManager.shared
   @ObservedObject private var inputMonitoringManager = InputMonitoringPermissionManager.sharedManager
+  @StateObject private var controllerTester = ControllerTestMonitor()
   @AppStorage("settings.input.mouseAdvancedExpanded") private var mouseAdvancedExpanded = false
   @AppStorage("settings.input.mouseTuningExpanded") private var mouseTuningExpanded = false
   @AppStorage("settings.input.controllerAdvancedExpanded") private var controllerAdvancedExpanded =
@@ -379,6 +381,10 @@ struct InputView: View {
 
       Divider()
 
+      ControllerTestCard(monitor: controllerTester)
+
+      Divider()
+
       DisclosureGroup(
         isExpanded: $controllerAdvancedExpanded,
         content: {
@@ -439,6 +445,141 @@ struct InputView: View {
         }
         .labelsHidden()
       })
+  }
+}
+
+@MainActor
+private final class ControllerTestMonitor: ObservableObject {
+  struct Device: Identifiable {
+    let id: ObjectIdentifier
+    let name: String
+    let layout: String
+  }
+
+  @Published private(set) var devices: [Device] = []
+  @Published private(set) var lastInput = "Waiting for a button press"
+  @Published private(set) var receivedInputCount = 0
+
+  private var connectObserver: NSObjectProtocol?
+  private var disconnectObserver: NSObjectProtocol?
+  private var installedControllerIDs = Set<ObjectIdentifier>()
+
+  init() {
+    connectObserver = NotificationCenter.default.addObserver(
+      forName: .GCControllerDidConnect, object: nil, queue: .main
+    ) { [weak self] _ in
+      self?.refresh()
+    }
+    disconnectObserver = NotificationCenter.default.addObserver(
+      forName: .GCControllerDidDisconnect, object: nil, queue: .main
+    ) { [weak self] _ in
+      self?.refresh()
+    }
+    refresh()
+  }
+
+  deinit {
+    if let connectObserver { NotificationCenter.default.removeObserver(connectObserver) }
+    if let disconnectObserver { NotificationCenter.default.removeObserver(disconnectObserver) }
+  }
+
+  func refresh() {
+    let controllers = GCController.controllers()
+    devices = controllers.compactMap { controller in
+      guard controller.extendedGamepad != nil || controller.gamepad != nil else { return nil }
+      installButtonObservers(on: controller)
+      return Device(
+        id: ObjectIdentifier(controller),
+        name: controller.vendorName ?? "Game Controller",
+        layout: controller.extendedGamepad != nil ? "Extended gamepad" : "Standard gamepad"
+      )
+    }
+
+    if devices.isEmpty {
+      lastInput = "No compatible controller detected"
+    }
+  }
+
+  private func installButtonObservers(on controller: GCController) {
+    let identifier = ObjectIdentifier(controller)
+    guard installedControllerIDs.insert(identifier).inserted else { return }
+
+    guard let gamepad = controller.extendedGamepad else { return }
+    observe(gamepad.buttonA, name: "A / Cross")
+    observe(gamepad.buttonB, name: "B / Circle")
+    observe(gamepad.buttonX, name: "X / Square")
+    observe(gamepad.buttonY, name: "Y / Triangle")
+    observe(gamepad.leftShoulder, name: "L1")
+    observe(gamepad.rightShoulder, name: "R1")
+    observe(gamepad.buttonMenu, name: "Menu / Options")
+    if let buttonOptions = gamepad.buttonOptions {
+      observe(buttonOptions, name: "Options / Share")
+    }
+    if let buttonHome = gamepad.buttonHome {
+      observe(buttonHome, name: "PS / Home")
+    }
+  }
+
+  private func observe(_ button: GCControllerButtonInput, name: String) {
+    button.pressedChangedHandler = { [weak self] _, _, pressed in
+      guard pressed else { return }
+      DispatchQueue.main.async {
+        self?.lastInput = "Received: \(name)"
+        self?.receivedInputCount += 1
+      }
+    }
+  }
+}
+
+private struct ControllerTestCard: View {
+  @ObservedObject var monitor: ControllerTestMonitor
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      HStack(alignment: .firstTextBaseline) {
+        Label("Controller Test", systemImage: "gamecontroller.fill")
+          .font(.subheadline.weight(.semibold))
+        Spacer()
+        Button("Refresh") { monitor.refresh() }
+          .buttonStyle(.borderless)
+      }
+
+      if monitor.devices.isEmpty {
+        Label("No compatible controller detected. Connect or wake your controller, then choose Refresh.", systemImage: "exclamationmark.triangle")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+      } else {
+        ForEach(monitor.devices) { device in
+          VStack(alignment: .leading, spacing: 2) {
+            Text(device.name)
+              .font(.subheadline.weight(.medium))
+            Text(device.layout)
+              .font(.caption)
+              .foregroundStyle(.secondary)
+          }
+        }
+
+        HStack(spacing: 8) {
+          Circle()
+            .fill(monitor.receivedInputCount > 0 ? Color.green : Color.orange)
+            .frame(width: 8, height: 8)
+          Text(monitor.lastInput)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+          Spacer()
+          Text("\(monitor.receivedInputCount) events")
+            .font(.caption.monospacedDigit())
+            .foregroundStyle(.secondary)
+        }
+        .padding(10)
+        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+
+        Text("This only verifies macOS input. Start a stream afterward to verify forwarding to Sunshine.")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+      }
+    }
+    .padding(.vertical, 2)
   }
 }
 
