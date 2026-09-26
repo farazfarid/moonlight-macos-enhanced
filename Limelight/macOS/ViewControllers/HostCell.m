@@ -32,10 +32,21 @@
     
     self.imageContainer.wantsLayer = YES;
     self.imageContainer.layer.masksToBounds = YES;
-    self.imageContainer.layer.cornerRadius = 10;
+    self.imageContainer.layer.cornerRadius = 14;
     self.labelContainer.wantsLayer = YES;
     self.labelContainer.layer.masksToBounds = YES;
-    self.labelContainer.layer.cornerRadius = 4;
+    self.labelContainer.layer.cornerRadius = 8;
+
+    self.view.wantsLayer = YES;
+    self.view.layer.cornerRadius = 16;
+    self.view.layer.masksToBounds = NO;
+    self.view.layer.borderWidth = 1;
+    self.view.layer.borderColor = [NSColor separatorColor].CGColor;
+    self.view.layer.backgroundColor = [NSColor controlBackgroundColor].CGColor;
+
+    self.hostName.font = [NSFont systemFontOfSize:14 weight:NSFontWeightSemibold];
+    self.hostName.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.statusLabel.font = [NSFont systemFontOfSize:11 weight:NSFontWeightMedium];
     
     self.statusLightView.wantsLayer = YES;
     self.statusLightView.layer.masksToBounds = YES;
@@ -118,7 +129,13 @@
 
 - (void)updateSelectedState:(BOOL)selected {
     self.imageContainer.clear = !selected;
-    
+    self.view.layer.borderColor = (selected ? [NSColor controlAccentColor] : [NSColor separatorColor]).CGColor;
+    self.view.layer.borderWidth = selected ? 2 : 1;
+    self.view.layer.shadowColor = [NSColor blackColor].CGColor;
+    self.view.layer.shadowOpacity = selected ? 0.18 : 0.08;
+    self.view.layer.shadowRadius = selected ? 10 : 5;
+    self.view.layer.shadowOffset = NSMakeSize(0, selected ? -3 : -1);
+
     self.labelContainer.backgroundColor = selected ? [NSColor selectedContentBackgroundColor] : [NSColor clearColor];
     self.hostName.textColor = selected ? [NSColor alternateSelectedControlTextColor] : [NSColor textColor];
 }
@@ -159,25 +176,25 @@
         case StateOnline:
             if (self.host.pairState == PairStateUnpaired) {
                 statusColor = [NSColor systemOrangeColor];
-                statusText = NSLocalizedString(@"Online, but not paired", @"Online, but not paired");
+                statusText = NSLocalizedString(@"Pair to connect", @"Pair to connect");
             } else {
                 statusColor = [NSColor systemGreenColor];
-                statusText = NSLocalizedString(@"Online, and paired", @"Online, and paired");
+                statusText = NSLocalizedString(@"Ready to play", @"Ready to play");
             }
             break;
         case StateOffline:
             if (self.host.pairState == PairStateUnpaired) {
                 statusColor = [NSColor systemGrayColor];
-                statusText = NSLocalizedString(@"Offline, and not paired", @"Offline, and not paired");
+                statusText = NSLocalizedString(@"Not available", @"Not available");
             } else {
                 statusColor = [NSColor systemRedColor];
-                statusText = NSLocalizedString(@"Offline, but paired", @"Offline, but paired");
+                statusText = NSLocalizedString(@"Host offline", @"Host offline");
             }
             break;
         case StateUnknown:
         default:
             statusColor = [NSColor systemGrayColor];
-            statusText = NSLocalizedString(@"Unknown", @"Unknown");
+            statusText = NSLocalizedString(@"Checking connection", @"Checking connection");
             break;
     }
 
