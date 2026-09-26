@@ -452,8 +452,8 @@
 					"-weak_framework",
 					MetalFX,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.faraz.MoonlightEnhanced;
-				PRODUCT_NAME = "Moonlight Enhanced";
+				PRODUCT_BUNDLE_IDENTIFIER = com.farazfarid.farside;
+				PRODUCT_NAME = Farside;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Limelight/Moonlight-Bridging-Header.h";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Moonlight-Swift.h";
@@ -513,8 +513,8 @@
 					"-weak_framework",
 					MetalFX,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.faraz.MoonlightEnhanced;
-				PRODUCT_NAME = "Moonlight Enhanced";
+				PRODUCT_BUNDLE_IDENTIFIER = com.farazfarid.farside;
+				PRODUCT_NAME = Farside;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Limelight/Moonlight-Bridging-Header.h";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Moonlight-Swift.h";

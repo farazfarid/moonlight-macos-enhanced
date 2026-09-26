@@ -441,7 +441,7 @@
 "Wi-Fi (channel unavailable)" = "Wi‑Fi（信道不可用）";
 
 /* Main Menu & Toolbar */
-"About Moonlight macOS Enhanced" = "关于 Moonlight macOS Enhanced";
+"About Farside" = "关于 Farside";
 "GitHub Repository" = "GitHub 仓库";
 "README & Credits" = "README 与致谢";
 "Services" = "服务";
@@ -716,7 +716,7 @@
 "Sunshine Extensions detail" = "当主机支持时，Moonlight 现在会发送 Foundation Sunshine 启动扩展参数，包括目标显示器、VDD、屏幕模式和 HDR 显示档案覆盖。";
 "Admin Prompt Only" = "仅管理员弹窗";
 "Welcome to Moonlight" = "欢迎使用 Moonlight";
-"Welcome to Moonlight macOS Enhanced" = "欢迎使用 Moonlight macOS Enhanced";
+"Welcome to Farside" = "欢迎使用 Farside";
 "Welcome Permissions Subtitle" = "先把你想用的权限和辅助能力配置好；之后也可以随时在设置里调整。";
 "Microphone Permission detail" = "只有在你想把本地麦克风传到主机时才需要。";
 "Install Persistent Helper" = "安装持久化 Helper";

@@ -63,7 +63,7 @@ static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua
     self.creditsTextFieldLink.attributedStringValue = [self makeTextFieldLinkWithURLString:MoonlightEnhancedReadmeURL :self.creditsTextFieldLink];
 
     if (self.view.window != nil) {
-        self.view.window.title = [[LanguageManager shared] localize:@"About Moonlight macOS Enhanced"];
+        self.view.window.title = [[LanguageManager shared] localize:@"About Farside"];
     }
 }
 

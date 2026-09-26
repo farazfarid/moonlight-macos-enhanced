@@ -84,7 +84,7 @@ private struct WelcomePermissionsView: View {
           .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
         VStack(alignment: .leading, spacing: 8) {
-          Text(languageManager.localize("Welcome to Moonlight macOS Enhanced"))
+          Text(languageManager.localize("Welcome to Farside"))
             .font(.system(size: 28, weight: .semibold, design: .rounded))
           Text(languageManager.localize("Welcome Permissions Subtitle"))
             .foregroundColor(.secondary)

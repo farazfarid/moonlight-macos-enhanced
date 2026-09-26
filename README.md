@@ -1,15 +1,15 @@
-# Moonlight Enhanced for macOS
+# Farside for macOS
 
 An English-first, native macOS client for streaming from Sunshine, Foundation Sunshine, and compatible GameStream hosts.
 
-Moonlight Enhanced is an independent community fork of [Moonlight macOS Enhanced](https://github.com/skyhua0224/moonlight-macos-enhanced). It focuses on a polished Mac experience: Apple Silicon support, reliable local-network discovery, clear diagnostics, and controls that feel at home on macOS.
+Farside is an independent community fork of [Moonlight macOS Enhanced](https://github.com/skyhua0224/moonlight-macos-enhanced). It focuses on a polished Mac experience: Apple Silicon support, reliable local-network discovery, clear diagnostics, and controls that feel at home on macOS.
 
-> Moonlight Enhanced is not affiliated with the Moonlight project, NVIDIA, Sunshine, or Foundation Sunshine.
+> Farside is not affiliated with the Moonlight project, NVIDIA, Sunshine, or Foundation Sunshine.
 
 ## What this fork changes
 
 - English-first interface, including stream controls, error states, and diagnostics
-- Separate app identity: it installs as **Moonlight Enhanced** and does not replace regular Moonlight
+- Separate app identity: it installs as **Farside** and does not replace regular Moonlight
 - macOS 15+ local-network and Bonjour declarations for reliable LAN discovery
 - Isolated pairing credentials so the enhanced build can coexist with regular Moonlight
 - Paired-client identity used consistently for launch, resume, and quit requests
@@ -24,7 +24,7 @@ Because personal development builds are not notarized by Apple, macOS may ask fo
 ## Connect a host
 
 1. Install and configure Sunshine or Foundation Sunshine on the host computer.
-2. Open Moonlight Enhanced and add the host, or wait for local-network discovery.
+2. Open Farside and add the host, or wait for local-network discovery.
 3. Pair using the displayed PIN.
 4. Launch Desktop or an app.
 

@@ -441,7 +441,7 @@
 "Wi-Fi (channel unavailable)" = "Wi-Fi (channel unavailable)";
 
 /* Main Menu & Toolbar */
-"About Moonlight macOS Enhanced" = "About Moonlight macOS Enhanced";
+"About Farside" = "About Farside";
 "GitHub Repository" = "GitHub Repository";
 "README & Credits" = "README & Credits";
 "Services" = "Services";
@@ -717,7 +717,7 @@
 "Sunshine Extensions detail" = "Moonlight now sends Foundation Sunshine launch extensions such as display selection, VDD, screen mode, and HDR display-profile overrides when the host supports them.";
 "Admin Prompt Only" = "Admin Prompt Only";
 "Welcome to Moonlight" = "Welcome to Moonlight";
-"Welcome to Moonlight macOS Enhanced" = "Welcome to Moonlight macOS Enhanced";
+"Welcome to Farside" = "Welcome to Farside";
 "Welcome Permissions Subtitle" = "Set up the permissions and helpers you want now. You can adjust them later in Settings.";
 "Microphone Permission detail" = "Needed only if you want to stream your microphone to the host.";
 "Install Persistent Helper" = "Install Persistent Helper";

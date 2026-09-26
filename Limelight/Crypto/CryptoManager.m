@@ -230,6 +230,21 @@ static NSData* p12 = nil;
                               withIntermediateDirectories:YES
                                                attributes:nil
                                                     error:nil];
+
+    // Farside supersedes the earlier Moonlight Enhanced build. Preserve the
+    // existing pairing identity once, so the renamed app does not force users
+    // to re-pair every saved host.
+    if ([bundleIdentifier isEqualToString:@"com.farazfarid.farside"]) {
+        NSString *legacyDirectory = [baseDirectory stringByAppendingPathComponent:@"com.faraz.MoonlightEnhanced"];
+        for (NSString *item in @[ @"client.crt", @"client.p12", @"client.key" ]) {
+            NSString *destination = [directory stringByAppendingPathComponent:item];
+            NSString *source = [legacyDirectory stringByAppendingPathComponent:item];
+            if (![[NSFileManager defaultManager] fileExistsAtPath:destination] &&
+                [[NSFileManager defaultManager] fileExistsAtPath:source]) {
+                [[NSFileManager defaultManager] copyItemAtPath:source toPath:destination error:nil];
+            }
+        }
+    }
     return directory;
 }
 
