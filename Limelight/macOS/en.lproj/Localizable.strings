@@ -445,10 +445,10 @@
 "GitHub Repository" = "GitHub Repository";
 "README & Credits" = "README & Credits";
 "Services" = "Services";
-"Hide Moonlight" = "Hide Moonlight";
+"Hide Moonlight" = "Hide Farside";
 "Hide Others" = "Hide Others";
 "Show All" = "Show All";
-"Quit Moonlight" = "Quit Moonlight";
+"Quit Moonlight" = "Quit Farside";
 "Edit" = "Edit";
 "Undo" = "Undo";
 "Redo" = "Redo";
@@ -503,7 +503,7 @@
 "Zoom" = "Zoom";
 "Bring All to Front" = "Bring All to Front";
 "Help" = "Help";
-"Moonlight Help" = "Moonlight Help";
+"Moonlight Help" = "Farside Help";
 "Add Host" = "Add Host";
 "Preferences" = "Preferences";
 "Preferences…" = "Preferences…";
@@ -566,8 +566,8 @@
 "Input Monitoring" = "Input Monitoring";
 "Input Monitoring detail" = "Needed for CoreHID high-polling mouse input.";
 "Input Monitoring Reentry detail" = "Input Monitoring is ready. Re-enter the stream once so CoreHID can take over.";
-"Input Monitoring Checking detail" = "Moonlight is waiting for macOS to confirm the latest Input Monitoring change.";
-"Input Monitoring Repair detail" = "If you already allowed Moonlight but CoreHID still stays unavailable, remove Moonlight from Input Monitoring, add it again, then reopen Moonlight.";
+"Input Monitoring Checking detail" = "Farside is waiting for macOS to confirm the latest Input Monitoring change.";
+"Input Monitoring Repair detail" = "If you already allowed Farside but CoreHID still stays unavailable, remove Farside from Input Monitoring, add it again, then reopen Farside.";
 "Granted" = "Granted";
 "Granted Pending Reentry" = "Granted · Re-enter Stream";
 "Check Settings" = "Check Settings";

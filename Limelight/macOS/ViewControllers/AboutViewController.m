@@ -21,8 +21,8 @@
 
 @implementation AboutViewController
 
-static NSString * const MoonlightEnhancedRepositoryURL = @"https://github.com/skyhua0224/moonlight-macos-enhanced";
-static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua0224/moonlight-macos-enhanced/blob/master/README.md";
+static NSString * const MoonlightEnhancedRepositoryURL = @"https://github.com/farazfarid/moonlight-macos-enhanced";
+static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/farazfarid/moonlight-macos-enhanced/blob/master/README.md";
 
 #pragma mark - Lifecycle
 

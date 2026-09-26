@@ -147,7 +147,7 @@ private struct WelcomePermissionsView: View {
   }
 
   private var githubURL: URL {
-    URL(string: "https://github.com/skyhua0224/moonlight-macos-enhanced")!
+    URL(string: "https://github.com/farazfarid/moonlight-macos-enhanced")!
   }
 
   @ViewBuilder
